@@ -38,12 +38,16 @@ public class CommandGame extends Command {
             event.getChannel().sendMessage(builder.addField("The following games are available:", sb.toString(), false).build()).queue();
         } else {
             if(args.get(0).equalsIgnoreCase("end")) {
-                getLily().getChatProcesser().getActiveGames().remove(event.getAuthor().getId());
-                event.getChannel().sendMessage(new EmbedBuilder().addField("Game ended", "Thanks for playing!", false).build()).queue();
+                if(getLily().getChatProcesser().getActiveGames().containsKey(event.getAuthor().getId())) {
+                    getLily().getChatProcesser().getActiveGames().remove(event.getAuthor().getId());
+                    event.getChannel().sendMessage(new EmbedBuilder().addField("Game ended", "Thanks for playing!", false).build()).queue();
+                } else {
+                    event.getChannel().sendMessage(new EmbedBuilder().addField("Error", "You aren't playing a game!", false).build()).queue();
+                }
                 return true;
             }
             if(getLily().getChatProcesser().getActiveGames().containsKey(event.getAuthor().getId())) {
-                event.getChannel().sendMessage(new EmbedBuilder().addField("Error", "You're already in a game!", false).build()).queue();
+                event.getChannel().sendMessage(new EmbedBuilder().addField("Error", "You're already playing a game!", false).build()).queue();
                 return true;
             }
             for(final LilyGame lilyGame : LilyGame.values()) {
