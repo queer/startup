@@ -42,9 +42,6 @@ public class ChatProcesser implements EventListener {
     public void onEvent(final Event event) {
         if(event instanceof MessageReceivedEvent) {
             final MessageReceivedEvent m = (MessageReceivedEvent) event;
-            if(!m.getGuild().getId().equalsIgnoreCase("206584013790380033")) {
-                return;
-            }
             final Message msg = ((MessageReceivedEvent) event).getMessage();
             final String content = msg.getContentRaw();
             if(content.startsWith(PREFIX)) {
