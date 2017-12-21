@@ -19,7 +19,8 @@ import java.util.List;
 public class CommandGame extends Command {
     public CommandGame(final Lily lily) {
         super(lily, "game", "See available games, or start a new one.", new String[]{
-                "`-game`", "`-game <game>`", "`-game end`", "", "Ex: `-game`", "Ex: `-game startup`", "Ex: `-game end`"
+                "`%PREFIX%game`", "`%PREFIX%game <game>`", "`%PREFIX%game end`", "",
+                "Ex: `%PREFIX%game`", "Ex: `%PREFIX%game startup`", "Ex: `%PREFIX%game end`"
         });
     }
     

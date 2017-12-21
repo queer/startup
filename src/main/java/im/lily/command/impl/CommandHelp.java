@@ -15,7 +15,7 @@ import java.util.List;
 public class CommandHelp extends Command {
     public CommandHelp(final Lily lily) {
         super(lily, "help", "Shows you useful info about lily.", new String[] {
-                "`-help`", "`-help <command>`", "", "Ex: `-help game`"
+                "`%PREFIX%help`", "`%PREFIX%help <command>`", "", "Ex: `%PREFIX%help game`"
         });
     }
     
@@ -28,7 +28,7 @@ public class CommandHelp extends Command {
                 builder.setTitle("lily help").addField(ChatProcesser.PREFIX + cmd.getName(), cmd.getDesc(), false);
                 final StringBuilder sb = new StringBuilder();
                 for(final String s : cmd.getLongHelp()) {
-                    sb.append(s).append('\n');
+                    sb.append(s.replace("%PREFIX%", ChatProcesser.PREFIX)).append('\n');
                 }
                 builder.addField("", sb.toString(), false);
                 event.getChannel().sendMessage(builder.build()).queue();
