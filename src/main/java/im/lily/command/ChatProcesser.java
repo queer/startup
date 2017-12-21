@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 12/17/17.
  */
 public class ChatProcesser implements EventListener {
-    public static final String PREFIX = "-";
+    public static final String PREFIX = System.getenv("LILY_PREFIX") != null ? System.getenv("LILY_PREFIX") : "-";
     
     @Getter
     private final Map<String, Command> commands = new ConcurrentHashMap<>();
