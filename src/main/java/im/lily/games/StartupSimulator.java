@@ -192,8 +192,16 @@ public class StartupSimulator extends Game {
     
     @Override
     public void initGame(final MessageReceivedEvent event) {
-        state = createState();
-        sendCard(event, cards.get(196));
+        EmbedBuilder init = new EmbedBuilder();
+        init.setTitle(String.format("%s | Startup Simulator", event.getAuthor().getName()))
+                .addField("Tutorial",
+                "Your goal is to have a valuation of at least $1 billion by the end of the year\n" +
+                "Use your time wisely!\n" +
+                "Also, make sure to keep your employees happy :)", false);
+        event.getChannel().sendMessage(init.build()).queue(m -> {
+            state = createState();
+            sendCard(event, cards.get(196));
+        });
     }
     
     private void endGame(final MessageReceivedEvent event, final String title, final String field, final String msg) {
@@ -204,7 +212,7 @@ public class StartupSimulator extends Game {
     
     @Override
     public void handleNextMove(final MessageReceivedEvent event) {
-        final String choice = event.getMessage().getContentRaw().trim();
+        final String choice = event.getMessage().getContentRaw().split(" ", 2)[0].trim();
         // Do nothing if it's not a choice
         if(!choice.equalsIgnoreCase("1") && !choice.equalsIgnoreCase("2")) {
             return;
