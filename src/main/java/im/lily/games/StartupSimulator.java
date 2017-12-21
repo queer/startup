@@ -109,8 +109,8 @@ public class StartupSimulator extends Game {
                 // TODO: Options 1 and 2 may be the same, should merge them
                 .addField("", String.format("1) %s\n2) %s", card.getChoices().getA().getLabel(),
                         card.getChoices().getB().getLabel()), false)
-                .addField("Stats", String.format("Value: $%s\nMood: %s (%s)\nMonth: %s", formatValuation(),
-                        formatHappiness(), state.happiness, getMonth()), false);
+                .addField("Stats", String.format("Value: $%s\nMood: %s\nMonth: %s", formatValuation(),
+                        formatHappiness(), getMonth()), false);
         event.getChannel().sendMessage(builder.build()).queue();
     }
     
