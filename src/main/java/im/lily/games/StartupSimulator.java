@@ -112,10 +112,10 @@ public class StartupSimulator extends Game {
             choices.append('\n').append("2) ").append(card.getChoices().getB().getLabel());
         }
         
-        builder.addField(String.format("@%s Startup Simulator", event.getAuthor().getName()), names + "\n" + card.getDescription(), false)
+        builder.addField(String.format("%s | Startup Simulator", event.getAuthor().getName()), names + "\n" + card.getDescription(), false)
                 // TODO: Options 1 and 2 may be the same, should merge them
                 .addField("", choices.toString(), false)
-                .addField("Stats", String.format("Value: $%s\nMood: %s\nMonth: %s", formatValuation(),
+                .addField("Stats", String.format("Value: $%s\nHappiness: %s\nMonth: %s", formatValuation(),
                         formatHappiness(), getMonth()), false);
         event.getChannel().sendMessage(builder.build()).queue();
     }
