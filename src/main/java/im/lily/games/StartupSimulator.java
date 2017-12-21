@@ -197,7 +197,7 @@ public class StartupSimulator extends Game {
                 .addField("Tutorial",
                 "Your goal is to have a valuation of at least $1 billion by the end of the year\n" +
                 "Use your time wisely!\n" +
-                "Also, make sure to keep your employees happy :)", false);
+                "Also, make sure to keep your employees happy. :smile:", false);
         event.getChannel().sendMessage(init.build()).queue(m -> {
             state = createState();
             sendCard(event, cards.get(196));
