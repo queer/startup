@@ -106,7 +106,7 @@ public class StartupSimulator extends Game {
         }
         final EmbedBuilder builder = new EmbedBuilder();
         
-        StringBuilder choices = new StringBuilder();
+        final StringBuilder choices = new StringBuilder();
         choices.append("1) ").append(card.getChoices().getA().getLabel());
         if(!card.getChoices().getA().getLabel().equalsIgnoreCase(card.getChoices().getB().getLabel())) {
             choices.append('\n').append("2) ").append(card.getChoices().getB().getLabel());
@@ -192,13 +192,13 @@ public class StartupSimulator extends Game {
     
     @Override
     public void initGame(final MessageReceivedEvent event) {
-        EmbedBuilder init = new EmbedBuilder();
+        final EmbedBuilder init = new EmbedBuilder();
         init.setTitle(String.format("%s | Startup Simulator", event.getAuthor().getName()))
                 .addField("Tutorial",
                         "Your goal is to have a valuation of at least $1 billion by the end of the year\n" +
                                 "Use your time wisely!\n" +
                                 "Also, make sure to keep your employees happy. :smile:\n\n" +
-                                "Type `1` or `2` to select an option.", false);
+                                "You can type `1` or `2` to make your choice.", false);
         event.getChannel().sendMessage(init.build()).queue(m -> {
             state = createState();
             sendCard(event, cards.get(196));
@@ -254,7 +254,7 @@ public class StartupSimulator extends Game {
                     "Your employees revolt, your startup collapses and you go back to driving for Uber.",
                     "Your employees have left, and with no one by your side, you go back to your mom's basement."
             };
-            endGame(event, "You lost!", "Your startup is daed", opts[random.nextInt(opts.length)]);
+            endGame(event, "You lost!", "Your startup is dead", opts[random.nextInt(opts.length)]);
             return;
         }
         
