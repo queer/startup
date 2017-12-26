@@ -31,7 +31,7 @@ public class CommandGame extends Command {
             final StringBuilder sb = new StringBuilder();
             for(final LilyGame game : LilyGame.values()) {
                 sb.append(String.format("- %s (`%s`)\n", game.getGameName(), game.getGameId()));
-                sb.append("- ").append(game.getDesc()).append('\n');
+                sb.append("    '").append(game.getDesc()).append("'\n");
             }
             sb.append(String.format("\nYou can start a game by doing `%sgame <id>`, ex. `%sgame startup`.",
                     ChatProcesser.PREFIX, ChatProcesser.PREFIX));
