@@ -27,11 +27,11 @@ public class CommandGame extends Command {
     @Override
     public boolean run(final MessageReceivedEvent event, final String cmdName, final String argString, final List<String> args) {
         if(args.isEmpty()) {
-            EmbedBuilder builder = new EmbedBuilder();
+            final EmbedBuilder builder = new EmbedBuilder();
             final StringBuilder sb = new StringBuilder();
             for(final LilyGame game : LilyGame.values()) {
                 sb.append(String.format("- %s (`%s`)\n", game.getGameName(), game.getGameId()));
-                sb.append("  '").append(game.getDesc()).append("'\n");
+                sb.append("  ").append(game.getDesc()).append('\n');
             }
             sb.append(String.format("\nYou can start a game by doing `%sgame <id>`, ex. `%sgame startup`.",
                     ChatProcesser.PREFIX, ChatProcesser.PREFIX));
