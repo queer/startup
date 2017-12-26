@@ -195,9 +195,10 @@ public class StartupSimulator extends Game {
         EmbedBuilder init = new EmbedBuilder();
         init.setTitle(String.format("%s | Startup Simulator", event.getAuthor().getName()))
                 .addField("Tutorial",
-                "Your goal is to have a valuation of at least $1 billion by the end of the year\n" +
-                "Use your time wisely!\n" +
-                "Also, make sure to keep your employees happy. :smile:", false);
+                        "Your goal is to have a valuation of at least $1 billion by the end of the year\n" +
+                                "Use your time wisely!\n" +
+                                "Also, make sure to keep your employees happy. :smile:\n\n" +
+                                "Type `1` or `2` to select an option.", false);
         event.getChannel().sendMessage(init.build()).queue(m -> {
             state = createState();
             sendCard(event, cards.get(196));
