@@ -38,15 +38,15 @@ public class CommandGame extends Command {
             event.getChannel().sendMessage(builder.addField("The following games are available:", sb.toString(), false).build()).queue();
         } else {
             if(args.get(0).equalsIgnoreCase("end")) {
-                if(getLily().getChatProcesser().getActiveGames().containsKey(event.getAuthor().getId())) {
-                    getLily().getChatProcesser().getActiveGames().remove(event.getAuthor().getId());
+                if(getLily().getState().getState(event.getGuild(), event.getAuthor()) != null) {
+                    getLily().getState().deleteState(event.getGuild(), event.getAuthor());
                     event.getChannel().sendMessage(new EmbedBuilder().addField("Game ended", "Thanks for playing!", false).build()).queue();
                 } else {
                     event.getChannel().sendMessage(new EmbedBuilder().addField("Error", "You aren't playing a game!", false).build()).queue();
                 }
                 return true;
             }
-            if(getLily().getChatProcesser().getActiveGames().containsKey(event.getAuthor().getId())) {
+            if(getLily().getState().isActive(event.getGuild(), event.getAuthor())) {
                 event.getChannel().sendMessage(new EmbedBuilder().addField("Error", "You're already playing a game!", false).build()).queue();
                 return true;
             }
@@ -55,7 +55,7 @@ public class CommandGame extends Command {
                     final Class<? extends Game> c = lilyGame.getGameClass();
                     try {
                         final Game game = c.getConstructor(Lily.class).newInstance(getLily());
-                        getLily().getChatProcesser().getActiveGames().put(event.getAuthor().getId(), game);
+                        getLily().getState().updateState(event.getGuild(), event.getAuthor(), game);
                         game.initGame(event);
                     } catch(final InstantiationException | NoSuchMethodException | InvocationTargetException
                             | IllegalAccessException e) {

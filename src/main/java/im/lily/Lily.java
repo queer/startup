@@ -1,6 +1,7 @@
 package im.lily;
 
 import im.lily.command.ChatProcesser;
+import im.lily.state.GamesState;
 import lombok.Data;
 import lombok.Getter;
 
@@ -14,13 +15,15 @@ import java.util.logging.Logger;
  * @author amy
  * @since 12/17/17.
  */
-@Data
 public final class Lily {
     @Getter
     private final Logger logger = Logger.getLogger("lily");
-    
+    @Getter
     private final ChatProcesser chatProcesser = new ChatProcesser(this);
+    @Getter
     private final Collection<Shard> shards = new ArrayList<>();
+    @Getter
+    private final GamesState state = new GamesState(this);
     
     private Lily() {
         logger.setUseParentHandlers(false);

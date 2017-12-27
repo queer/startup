@@ -85,7 +85,7 @@ public class StartupSimulator extends Game {
     private GameState state;
     
     public StartupSimulator(final Lily lily) {
-        super(lily);
+        super(lily, "Startup Simulator");
     }
     
     public static String readFullyFromJar(@SuppressWarnings("SameParameterValue") final String fileName) {
@@ -112,8 +112,7 @@ public class StartupSimulator extends Game {
             choices.append('\n').append("2) ").append(card.getChoices().getB().getLabel());
         }
         
-        builder.addField(String.format("%s | Startup Simulator", event.getAuthor().getName()), names + "\n" + card.getDescription(), false)
-                // TODO: Options 1 and 2 may be the same, should merge them
+        builder.addField(getTitle(event), names + "\n" + card.getDescription(), false)
                 .addField("", choices.toString(), false)
                 .addField("Stats", String.format("Value: $%s\nHappiness: %s\nMonth: %s", formatValuation(),
                         formatHappiness(), getMonth()), false);
@@ -208,7 +207,7 @@ public class StartupSimulator extends Game {
     private void endGame(final MessageReceivedEvent event, final String title, final String field, final String msg) {
         final EmbedBuilder builder = new EmbedBuilder().setTitle(title).addField(field, msg, false);
         event.getChannel().sendMessage(builder.build()).queue();
-        getLily().getChatProcesser().getActiveGames().remove(event.getAuthor().getId());
+        getLily().getState().deleteState(event.getGuild(), event.getAuthor());
     }
     
     @Override
@@ -219,9 +218,7 @@ public class StartupSimulator extends Game {
             return;
         }
         if(state.deck.isEmpty()) {
-            final EmbedBuilder builder = new EmbedBuilder()
-                    .addField("Startup Simulator", "Completely ran out of options to give you!", false);
-            event.getChannel().sendMessage(builder.build()).queue();
+            endGame(event, getTitle(event), "Game over!", "Completely ran out of options to give you!");
             return;
         }
         // Apply state from previous card
@@ -276,9 +273,7 @@ public class StartupSimulator extends Game {
                     return;
                 }
             }
-            final EmbedBuilder builder = new EmbedBuilder()
-                    .addField("Startup Simulator", "Completely ran out of options to give you!", false);
-            event.getChannel().sendMessage(builder.build()).queue();
+            endGame(event, getTitle(event), "Game over!", "Completely ran out of options to give you!");
         }
     }
     

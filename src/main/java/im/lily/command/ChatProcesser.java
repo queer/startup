@@ -25,9 +25,6 @@ public class ChatProcesser implements EventListener {
     
     private final Lily lily;
     
-    @Getter
-    private final Map<String, Game> activeGames = new ConcurrentHashMap<>();
-    
     public ChatProcesser(final Lily lily) {
         this.lily = lily;
     }
@@ -61,8 +58,11 @@ public class ChatProcesser implements EventListener {
                     lily.getLogger().info("Processing command: " + cmdName);
                     command.run(m, cmdName, finalArgString, args);
                 });
-            } else if(activeGames.containsKey(m.getAuthor().getId())) {
-                activeGames.get(m.getAuthor().getId()).handleNextMove(m);
+            } else {
+                final Game state = lily.getState().getState(m.getGuild(), m.getAuthor());
+                if(state != null) {
+                    state.handleNextMove(m);
+                }
             }
         }
     }
