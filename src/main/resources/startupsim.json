@@ -110,7 +110,7 @@
         }
       },
       "b": {
-        "label": "Damn PHP",
+        "label": "Screw PHP",
         "values": {
           "valuation": -5,
           "happiness": -3,
@@ -342,7 +342,7 @@
     "conditions": "belowValuation(500)",
     "choices": {
       "a": {
-        "label": "Fuck this guy",
+        "label": "Screw this guy",
         "values": {
           "valuation": -3,
           "happiness": 2,
@@ -1537,7 +1537,7 @@
   },
   {
     "id": 65,
-    "description": "One of our account managers just told a client to eat dog shit...",
+    "description": "One of our account managers just told a client to eat dog poop...",
     "character": "support-01",
     "conditions": "",
     "choices": {
@@ -2054,7 +2054,7 @@
         }
       },
       "b": {
-        "label": "Fuck the system!",
+        "label": "Screw the system!",
         "values": {
           "valuation": -5,
           "happiness": 1,
@@ -2294,7 +2294,7 @@
         }
       },
       "b": {
-        "label": "Fuck this",
+        "label": "Screw this",
         "values": {
           "valuation": -5,
           "happiness": -1,
