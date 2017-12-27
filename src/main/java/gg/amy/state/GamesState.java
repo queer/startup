@@ -1,7 +1,7 @@
-package im.lily.state;
+package gg.amy.state;
 
-import im.lily.Lily;
-import im.lily.games.Game;
+import gg.amy.Bot;
+import gg.amy.games.Game;
 import lombok.Getter;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
@@ -16,11 +16,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @SuppressWarnings({"TypeMayBeWeakened", "unused"})
 public class GamesState {
     @Getter
-    private final Lily lily;
+    private final Bot bot;
     private final Map<String, Map<String, Game>> states = new ConcurrentHashMap<>();
     
-    public GamesState(final Lily lily) {
-        this.lily = lily;
+    public GamesState(final Bot bot) {
+        this.bot = bot;
     }
     
     public Game getState(final Guild guild, final User user) {
@@ -48,9 +48,7 @@ public class GamesState {
     
     public boolean isActive(final Guild guild, final User user) {
         if(states.containsKey(guild.getId())) {
-            if(states.get(guild.getId()).containsKey(user.getId())) {
-                return true;
-            }
+            return states.get(guild.getId()).containsKey(user.getId());
         }
         return false;
     }

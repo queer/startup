@@ -1,5 +1,5 @@
 FROM openjdk:8-jre-alpine
 
-ENTRYPOINT ["/usr/bin/java", "-jar", "/usr/share/lily/lily.jar"]
+ENTRYPOINT ["/usr/bin/java", "-jar", "/usr/share/startup/startup.jar"]
 
-ADD target/lily*.jar /usr/share/lily/lily.jar
+ADD target/startup*.jar /usr/share/startup/startup.jar

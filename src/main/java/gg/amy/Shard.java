@@ -1,6 +1,6 @@
-package im.lily;
+package gg.amy;
 
-import im.lily.command.ChatProcesser;
+import gg.amy.command.ChatProcessor;
 import lombok.Getter;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -20,7 +20,7 @@ import javax.security.auth.login.LoginException;
 @SuppressWarnings("unused")
 public class Shard {
     @Getter
-    private final Lily lily;
+    private final Bot bot;
     private final String token;
     @Getter
     private final int shardId;
@@ -29,8 +29,8 @@ public class Shard {
     @Getter
     private JDA jda;
     
-    Shard(final Lily lily, final String token, final int shardId, final int shardLimit) {
-        this.lily = lily;
+    Shard(final Bot bot, final String token, final int shardId, final int shardLimit) {
+        this.bot = bot;
         this.token = token;
         this.shardId = shardId;
         this.shardLimit = shardLimit;
@@ -43,13 +43,13 @@ public class Shard {
                     .setToken(token)
                     .useSharding(shardId, shardLimit)
                     .setAudioEnabled(false)
-                    .setGame(Game.of(Game.GameType.DEFAULT, ChatProcesser.PREFIX + "help | lily.im"))
+                    .setGame(Game.of(Game.GameType.DEFAULT, ChatProcessor.PREFIX + "help"))
                     .addEventListener((EventListener) event -> {
                         if(event instanceof ReadyEvent) {
-                            lily.getLogger().info("lily shard " + shardId + " booted and ready to go!");
+                            bot.getLogger().info("Shard " + shardId + " booted and ready to go!");
                         }
                     })
-                    .addEventListener(lily.getChatProcesser())
+                    .addEventListener(bot.getChatProcessor())
                     .setStatus(OnlineStatus.DO_NOT_DISTURB)
                     .buildBlocking(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
         } catch(final LoginException | InterruptedException | RateLimitedException e) {

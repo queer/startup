@@ -1,8 +1,8 @@
-package im.lily.games;
+package gg.amy.games;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import im.lily.Lily;
+import gg.amy.Bot;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Value;
@@ -84,12 +84,12 @@ public class StartupSimulator extends Game {
     private final Random random = new Random();
     private GameState state;
     
-    public StartupSimulator(final Lily lily) {
-        super(lily, "Startup Simulator");
+    public StartupSimulator(final Bot bot) {
+        super(bot, "Startup Simulator");
     }
     
     public static String readFullyFromJar(@SuppressWarnings("SameParameterValue") final String fileName) {
-        final InputStream in = Lily.class.getResourceAsStream("/startupsim.json");
+        final InputStream in = Bot.class.getResourceAsStream("/startupsim.json");
         final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         return String.join(" ", reader.lines().collect(Collectors.toList()));
     }
@@ -204,10 +204,11 @@ public class StartupSimulator extends Game {
         });
     }
     
-    private void endGame(final MessageReceivedEvent event, final String title, final String field, final String msg) {
+    @Override
+    public void endGame(final MessageReceivedEvent event, final String title, final String field, final String msg) {
         final EmbedBuilder builder = new EmbedBuilder().setTitle(title).addField(field, msg, false);
         event.getChannel().sendMessage(builder.build()).queue();
-        getLily().getState().deleteState(event.getGuild(), event.getAuthor());
+        getBot().getState().deleteState(event.getGuild(), event.getAuthor());
     }
     
     @Override

@@ -1,9 +1,10 @@
-package im.lily.command;
+package gg.amy.command;
 
-import im.lily.Lily;
-import im.lily.command.impl.CommandGame;
-import im.lily.command.impl.CommandHelp;
-import im.lily.games.Game;
+import gg.amy.Bot;
+import gg.amy.command.impl.CommandStartup;
+import gg.amy.command.impl.CommandHelp;
+import gg.amy.command.impl.CommandRename;
+import gg.amy.games.Game;
 import lombok.Getter;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.Event;
@@ -17,21 +18,23 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author amy
  * @since 12/17/17.
  */
-public class ChatProcesser implements EventListener {
-    public static final String PREFIX = System.getenv("LILY_PREFIX") != null ? System.getenv("LILY_PREFIX") : "-";
+public class ChatProcessor implements EventListener {
+    public static final String PREFIX = System.getenv("BOT_PREFIX") != null ? System.getenv("BOT_PREFIX") : "-";
     
     @Getter
     private final Map<String, Command> commands = new ConcurrentHashMap<>();
     
-    private final Lily lily;
+    private final Bot bot;
     
-    public ChatProcesser(final Lily lily) {
-        this.lily = lily;
+    public ChatProcessor(final Bot bot) {
+        this.bot = bot;
     }
     
-    public ChatProcesser registerCommands() {
-        commands.put("help", new CommandHelp(lily));
-        commands.put("game", new CommandGame(lily));
+    @SuppressWarnings("UnusedReturnValue")
+    public ChatProcessor registerCommands() {
+        commands.put("help", new CommandHelp(bot));
+        commands.put("startup", new CommandStartup(bot));
+        commands.put("rename", new CommandRename(bot));
         return this;
     }
     
@@ -55,11 +58,18 @@ public class ChatProcesser implements EventListener {
                 }
                 final String finalArgString = argString;
                 Optional.ofNullable(commands.get(cmdName)).ifPresent(command -> {
-                    lily.getLogger().info("Processing command: " + cmdName);
-                    command.run(m, cmdName, finalArgString, args);
+                    if(command.isAdminCommand()) {
+                        if(m.getAuthor().getId().equalsIgnoreCase("128316294742147072")) {
+                            bot.getLogger().info("Processing admin command: " + cmdName);
+                            command.run(m, cmdName, finalArgString, args);
+                        }
+                    } else {
+                        bot.getLogger().info("Processing command: " + cmdName);
+                        command.run(m, cmdName, finalArgString, args);
+                    }
                 });
             } else {
-                final Game state = lily.getState().getState(m.getGuild(), m.getAuthor());
+                final Game state = bot.getState().getState(m.getGuild(), m.getAuthor());
                 if(state != null) {
                     state.handleNextMove(m);
                 }
