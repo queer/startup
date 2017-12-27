@@ -43,7 +43,7 @@ public class Shard {
                     .setToken(token)
                     .useSharding(shardId, shardLimit)
                     .setAudioEnabled(false)
-                    .setGame(Game.of(Game.GameType.DEFAULT, ChatProcesser.PREFIX + "help"))
+                    .setGame(Game.of(Game.GameType.DEFAULT, ChatProcesser.PREFIX + "help | lily.im"))
                     .addEventListener((EventListener) event -> {
                         if(event instanceof ReadyEvent) {
                             lily.getLogger().info("lily shard " + shardId + " booted and ready to go!");

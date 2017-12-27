@@ -107,9 +107,9 @@ public class StartupSimulator extends Game {
         final EmbedBuilder builder = new EmbedBuilder();
         
         final StringBuilder choices = new StringBuilder();
-        choices.append("1) ").append(card.getChoices().getA().getLabel());
+        choices.append("**1**. ").append(card.getChoices().getA().getLabel());
         if(!card.getChoices().getA().getLabel().equalsIgnoreCase(card.getChoices().getB().getLabel())) {
-            choices.append('\n').append("2) ").append(card.getChoices().getB().getLabel());
+            choices.append('\n').append("**2.** ").append(card.getChoices().getB().getLabel());
         }
         
         builder.addField(getTitle(event), names + "\n" + card.getDescription(), false)
@@ -197,7 +197,7 @@ public class StartupSimulator extends Game {
                         "Your goal is to have a valuation of at least $1 billion by the end of the year\n" +
                                 "Use your time wisely!\n" +
                                 "Also, make sure to keep your employees happy. :smile:\n\n" +
-                                "You can type `1` or `2` to make your choice.", false);
+                                "You can type **1** or **2** to make your choice.", false);
         event.getChannel().sendMessage(init.build()).queue(m -> {
             state = createState();
             sendCard(event, cards.get(196));
@@ -232,7 +232,7 @@ public class StartupSimulator extends Game {
         }
         if(state.time <= 0) {
             if(state.valuation >= 1000) {
-                endGame(event, "You won!", String.format("Your startup is worth $%.3f!", state.valuation / 1000D),
+                endGame(event, "You won!", String.format("Your startup is worth %.3f BILLION dollars!", state.valuation / 1000D),
                         "You still don't have revenue, but who cares - UNICORN, BABY!");
                 return;
             } else if(state.valuation >= 800) {
