@@ -52,6 +52,7 @@ public class ChatProcessor implements EventListener {
                     map.remove(user);
                 }
             }));
+            this.bot.getLogger().info("Pruned " + counter.get() + " games.");
         });
     }
     
