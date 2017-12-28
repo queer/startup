@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GamesState {
     @Getter
     private final Bot bot;
+    @Getter
     private final Map<String, Map<String, Game>> states = new ConcurrentHashMap<>();
     
     public GamesState(final Bot bot) {

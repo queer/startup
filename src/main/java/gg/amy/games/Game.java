@@ -2,6 +2,7 @@ package gg.amy.games;
 
 import gg.amy.Bot;
 import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
@@ -14,9 +15,14 @@ public abstract class Game {
     @Getter
     private final String name;
     
+    @Getter
+    @Setter
+    private long lastInteraction;
+    
     protected Game(final Bot bot, final String name) {
         this.bot = bot;
         this.name = name;
+        lastInteraction = System.currentTimeMillis();
     }
     
     public abstract void initGame(MessageReceivedEvent event);

@@ -114,8 +114,8 @@ public class StartupSimulator extends Game {
         
         builder.addField(getTitle(event), names + "\n" + card.getDescription(), false)
                 .addField("", choices.toString(), false)
-                .addField("Stats", String.format("Value: $%s\nHappiness: %s\nMonth: %s", formatValuation(),
-                        formatHappiness(), getMonth()), false);
+                .addField("Stats", String.format("Valuation: %s\nHappiness: %s\nMonth: %s %s", formatValuation(),
+                        formatHappiness(), getMonth(), monthProgressBar()), false);
         event.getChannel().sendMessage(builder.build()).queue();
     }
     
@@ -151,7 +151,30 @@ public class StartupSimulator extends Game {
     }
     
     private String formatValuation() {
-        return String.format("%.3fB", state.valuation / 1000D);
+        if(state.valuation <= 0) {
+            return "Worthless";
+        }
+        if(state.valuation < 1000) {
+            return String.format("$%d million", state.valuation);
+        } else {
+            return String.format("$%.3f billion", state.valuation / 1000D);
+        }
+    }
+    
+    private String monthProgressBar() {
+        final int day = 84 - state.time;
+        final int nextMonth = ((84 - state.time) / 7 + 1) * 7;
+        int daysLeft = nextMonth - day;
+        int daysUsed = 7 - daysLeft;
+        final StringBuilder s = new StringBuilder("`[");
+        for(int i = 0; i < daysUsed; i++) {
+            s.append('█');
+        }
+        for(int i = 0; i < daysLeft; i++) {
+            s.append('.');
+        }
+        s.append("]`");
+        return s.toString();
     }
     
     private int timeToMonth() {
@@ -218,6 +241,7 @@ public class StartupSimulator extends Game {
         if(!choice.equalsIgnoreCase("1") && !choice.equalsIgnoreCase("2")) {
             return;
         }
+        setLastInteraction(System.currentTimeMillis());
         if(state.deck.isEmpty()) {
             endGame(event, getTitle(event), "Game over!", "Completely ran out of options to give you!");
             return;

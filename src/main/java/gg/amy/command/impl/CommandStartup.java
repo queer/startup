@@ -32,7 +32,7 @@ public class CommandStartup extends Command {
                 sb.append(String.format("%s\n", game.getGameName()));
                 sb.append(game.getDesc()).append('\n');
             }
-            sb.append(String.format("Start your game with %sstartup start, or end it with %sstartup end", ChatProcessor.PREFIX, ChatProcessor.PREFIX));
+            sb.append(String.format("Start your game with **%sstartup start**, or end it with **%sstartup end**", ChatProcessor.PREFIX, ChatProcessor.PREFIX));
             event.getChannel().sendMessage(builder.addField("Game info", sb.toString(), false).build()).queue();
         } else {
             if(args.get(0).equalsIgnoreCase("end")) {

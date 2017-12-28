@@ -44,7 +44,7 @@ public final class Bot {
     
     private void start() {
         logger.info("Booting...");
-        chatProcessor.registerCommands();
+        chatProcessor.registerCommands().start();
         logger.info("Registered commands!");
         final int recommendedShards = getRecommendedShards();
         for(int i = 0; i < recommendedShards; i++) {
