@@ -37,22 +37,25 @@ public class ChatProcessor implements EventListener {
     public ChatProcessor(final Bot bot) {
         this.bot = bot;
         pruneThread = new Thread(() -> {
-            // Prune every minute
-            try {
-                Thread.sleep(TimeUnit.MINUTES.toMillis(1L));
-            } catch(final InterruptedException e) {
-                e.printStackTrace();
-            }
-            this.bot.getLogger().info("Pruning games...");
-            final AtomicInteger counter = new AtomicInteger(0);
-            this.bot.getState().getStates().forEach((guild, map) -> map.forEach((user, game) -> {
-                // If it's been >= 5 minutes, prune
-                if(System.currentTimeMillis() - game.getLastInteraction() >= TimeUnit.MINUTES.toMillis(5L)) {
-                    counter.incrementAndGet();
-                    map.remove(user);
+            while(true) {
+                // Prune every minute
+                try {
+                    Thread.sleep(TimeUnit.MINUTES.toMillis(1L));
+                } catch(final InterruptedException e) {
+                    e.printStackTrace();
                 }
-            }));
-            this.bot.getLogger().info("Pruned " + counter.get() + " games.");
+                final AtomicInteger counter = new AtomicInteger(0);
+                this.bot.getState().getStates().forEach((guild, map) -> map.forEach((user, game) -> {
+                    // If it's been >= 5 minutes, prune
+                    if(System.currentTimeMillis() - game.getLastInteraction() >= TimeUnit.MINUTES.toMillis(5L)) {
+                        counter.incrementAndGet();
+                        map.remove(user);
+                    }
+                }));
+                if(counter.get() > 0) {
+                    this.bot.getLogger().info("Pruned " + counter.get() + " games.");
+                }
+            }
         });
     }
     
