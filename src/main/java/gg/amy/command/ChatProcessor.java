@@ -9,9 +9,9 @@ import gg.amy.games.Game;
 import lombok.Getter;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.EventListener;
 
@@ -41,6 +41,7 @@ public class ChatProcessor implements EventListener {
     public ChatProcessor(final Bot bot) {
         this.bot = bot;
         pruneThread = new Thread(() -> {
+            //noinspection InfiniteLoopStatement
             while(true) {
                 // Prune every minute
                 try {
@@ -48,17 +49,21 @@ public class ChatProcessor implements EventListener {
                 } catch(final InterruptedException e) {
                     e.printStackTrace();
                 }
-                final AtomicInteger counter = new AtomicInteger(0);
+                final AtomicInteger pruned = new AtomicInteger(0);
+                final AtomicInteger active = new AtomicInteger(0);
                 this.bot.getState().getStates().forEach((guild, map) -> map.forEach((user, game) -> {
                     // If it's been >= 5 minutes, prune
                     if(System.currentTimeMillis() - game.getLastInteraction() >= TimeUnit.MINUTES.toMillis(5L)) {
-                        counter.incrementAndGet();
+                        pruned.incrementAndGet();
                         map.remove(user);
+                    } else {
+                        pruned.incrementAndGet();
                     }
                 }));
-                if(counter.get() > 0) {
-                    this.bot.getLogger().info("Pruned " + counter.get() + " games.");
+                if(pruned.get() > 0) {
+                    this.bot.getLogger().info("Pruned " + pruned.get() + " games.");
                 }
+                this.bot.getMetrics().getClient().gauge("active-games", active.get());
             }
         });
     }
@@ -113,19 +118,16 @@ public class ChatProcessor implements EventListener {
                     }
                 }
             } else if(event instanceof GuildJoinEvent) {
-                // Send join message
-                try {
-                    final GuildJoinEvent g = (GuildJoinEvent) event;
-                    final Guild guild = g.getGuild();
-                    final TextChannel defaultChannel = guild.getDefaultChannel();
-                    if(defaultChannel.canTalk()) {
-                        bot.getLogger().info("Joined '" + guild.getName() + "' " + guild.getId() + " +" + guild.getMembers().size());
-                    } else {
-                        bot.getLogger().warning("Not sending join message to " + guild.getId() + " / '" + guild.getName() + "' - Can't talk!");
-                    }
-                } catch(Exception e) {
-                
-                }
+                // TODO: Send join message?
+                final GuildJoinEvent g = (GuildJoinEvent) event;
+                final Guild guild = g.getGuild();
+                bot.getLogger().info("Joined '" + guild.getName() + "' " + guild.getId() + " +" + guild.getMembers().size());
+                bot.getMetrics().getClient().gauge("guilds", g.getJDA().getGuildCache().size(), "shard:" + g.getJDA().getShardInfo().getShardId());
+            } else if(event instanceof GuildLeaveEvent) {
+                final GuildLeaveEvent g = (GuildLeaveEvent) event;
+                final Guild guild = g.getGuild();
+                bot.getLogger().info("Joined '" + guild.getName() + "' " + guild.getId() + " +" + guild.getMembers().size());
+                bot.getMetrics().getClient().gauge("guilds", g.getJDA().getGuildCache().size(), "shard:" + g.getJDA().getShardInfo().getShardId());
             }
         });
     }

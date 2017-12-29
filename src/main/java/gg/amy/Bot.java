@@ -24,6 +24,8 @@ public final class Bot {
     private final Collection<Shard> shards = new ArrayList<>();
     @Getter
     private final GamesState state = new GamesState(this);
+    @Getter
+    private final Metrics metrics = new Metrics();
     
     private Bot() {
         logger.setUseParentHandlers(false);
