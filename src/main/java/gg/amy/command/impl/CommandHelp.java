@@ -40,7 +40,8 @@ public class CommandHelp extends Command {
         getBot().getChatProcessor().getCommands().values()
                 .stream().filter(e -> !e.isAdminCommand())
                 .forEach(e -> sb.append(String.format("**%s%s**: %s\n", ChatProcessor.PREFIX, e.getName(), e.getDesc())));
-        sb.append("\n\nSupport server: https://discord.gg/wdp8zq4");
+        sb.append("\n\nSupport server: https://discord.gg/wdp8zq4\n");
+        sb.append("Bot invite: [Click](https://discordapp.com/oauth2/authorize?client_id=383113162670604289&scope=bot&permissions=347136)");
         builder.addField("Help", sb.toString(), false);
         event.getChannel().sendMessage(builder.build()).queue();
         return true;

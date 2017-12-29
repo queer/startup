@@ -1,13 +1,17 @@
 package gg.amy.command;
 
 import gg.amy.Bot;
+import gg.amy.command.impl.CommandDebug;
 import gg.amy.command.impl.CommandHelp;
 import gg.amy.command.impl.CommandRename;
 import gg.amy.command.impl.CommandStartup;
 import gg.amy.games.Game;
 import lombok.Getter;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.EventListener;
 
@@ -63,6 +67,7 @@ public class ChatProcessor implements EventListener {
         commands.put("help", new CommandHelp(bot));
         commands.put("startup", new CommandStartup(bot));
         commands.put("rename", new CommandRename(bot));
+        commands.put("debug", new CommandDebug(bot));
         return this;
     }
     
@@ -97,7 +102,7 @@ public class ChatProcessor implements EventListener {
                                 command.run(m, cmdName, finalArgString, args);
                             }
                         } else {
-                            bot.getLogger().info("Processing command: " + cmdName);
+                            //bot.getLogger().info("Processing command: " + cmdName);
                             command.run(m, cmdName, finalArgString, args);
                         }
                     });
@@ -106,6 +111,20 @@ public class ChatProcessor implements EventListener {
                     if(state != null) {
                         state.handleNextMove(m);
                     }
+                }
+            } else if(event instanceof GuildJoinEvent) {
+                // Send join message
+                try {
+                    final GuildJoinEvent g = (GuildJoinEvent) event;
+                    final Guild guild = g.getGuild();
+                    final TextChannel defaultChannel = guild.getDefaultChannel();
+                    if(defaultChannel.canTalk()) {
+                        bot.getLogger().info("Joined '" + guild.getName() + "' " + guild.getId() + " +" + guild.getMembers().size());
+                    } else {
+                        bot.getLogger().warning("Not sending join message to " + guild.getId() + " / '" + guild.getName() + "' - Can't talk!");
+                    }
+                } catch(Exception e) {
+                
                 }
             }
         });

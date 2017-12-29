@@ -1,5 +1,6 @@
 package gg.amy;
 
+import com.mashape.unirest.http.Unirest;
 import gg.amy.state.GamesState;
 import gg.amy.command.ChatProcessor;
 import lombok.Getter;
@@ -34,7 +35,19 @@ public final class Bot {
     }
     
     private int getRecommendedShards() {
-        // TODO: debug mode, remove
+        if(System.getenv("BOT_DEBUG") != null
+                && Boolean.parseBoolean(System.getenv("BOT_DEBUG"))) {
+            getLogger().info("### DEBUG MODE: 2 SHARDS");
+            return 2;
+        }
+        try {
+            return Unirest.get("https://discordapp.com/api/gateway/bot")
+                    .header("Authorization", "Bot " + getToken())
+                    .header("Content-Type", "application/json")
+                    .asJson().getBody().getObject().getInt("shards");
+        } catch(final Exception e) {
+            e.printStackTrace();
+        }
         return 1;
     }
     
@@ -47,6 +60,7 @@ public final class Bot {
         chatProcessor.registerCommands().start();
         logger.info("Registered commands!");
         final int recommendedShards = getRecommendedShards();
+        logger.info("Booting with " + recommendedShards + " recommended shards...");
         for(int i = 0; i < recommendedShards; i++) {
             logger.info("Booting shard " + i + "...");
             final Shard shard = new Shard(this, getToken(), i, recommendedShards).connect();
@@ -60,7 +74,7 @@ public final class Bot {
             }
         }
         try {
-            Thread.sleep(2500L);
+            Thread.sleep(6000L);
         } catch(final InterruptedException e) {
             e.printStackTrace();
         }
