@@ -252,21 +252,21 @@ public class StartupSimulator extends Game {
         
         // Check victory / loss
         if(state.valuation <= 0) {
-            endGame(event, "You lost!", "Worthless", "Everyone abandons your worthless startup and you become an alcoholic.");
+            endGame(event, getTitle(event, "You lost!"), "Worthless", "Everyone abandons your worthless startup and you become an alcoholic.");
             return;
         }
         if(state.time <= 0) {
             if(state.valuation >= 1000) {
-                endGame(event, "You won!", String.format("Your startup is worth %.3f BILLION dollars!", state.valuation / 1000D),
+                endGame(event, getTitle(event, "You won!"), String.format("Your startup is worth %.3f BILLION dollars!", state.valuation / 1000D),
                         "You still don't have revenue, but who cares - UNICORN, BABY!");
                 return;
             } else if(state.valuation >= 800) {
-                endGame(event, "You lost!", "Out of time",
+                endGame(event, getTitle(event, "You lost!"), "Out of time",
                         "You raise a lot of money, but being valued at less than a billion is not sexy, " +
                                 "and the tech world soon forgets about your startup.");
                 return;
             } else {
-                endGame(event, "You lost!", "Out of time",
+                endGame(event, getTitle(event, "You lost!"), "Out of time",
                         "You raised a bit of money, but you're just not cool enough to be a unicorn.");
                 return;
             }

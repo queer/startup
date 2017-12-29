@@ -3,8 +3,8 @@ package gg.amy.command.impl;
 import gg.amy.Bot;
 import gg.amy.command.ChatProcessor;
 import gg.amy.command.Command;
-import gg.amy.games.StartupSimulator;
 import gg.amy.games.Game;
+import gg.amy.games.StartupSimulator;
 import lombok.Getter;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -33,7 +33,8 @@ public class CommandStartup extends Command {
                 sb.append(game.getDesc()).append('\n');
             }
             sb.append(String.format("Start your game with **%sstartup start**, or end it with **%sstartup end**", ChatProcessor.PREFIX, ChatProcessor.PREFIX));
-            event.getChannel().sendMessage(builder.addField("Game info", sb.toString(), false).build()).queue();
+            event.getChannel().sendMessage(builder.addField(event.getMessage().getAuthor().getName()
+                    + " | Game info", sb.toString(), false).build()).queue();
         } else {
             if(args.get(0).equalsIgnoreCase("end")) {
                 if(getBot().getState().getState(event.getGuild(), event.getAuthor()) != null) {
@@ -66,7 +67,6 @@ public class CommandStartup extends Command {
                 }
                 return true;
             }
-
         }
         return true;
     }

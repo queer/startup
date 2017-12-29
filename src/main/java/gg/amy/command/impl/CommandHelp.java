@@ -25,7 +25,7 @@ public class CommandHelp extends Command {
             final Command cmd = getBot().getChatProcessor().getCommands().get(args.get(0).toLowerCase());
             if(cmd != null && !cmd.isAdminCommand()) {
                 final EmbedBuilder builder = new EmbedBuilder();
-                builder.setTitle("Help").addField(ChatProcessor.PREFIX + cmd.getName(), cmd.getDesc(), false);
+                builder.setTitle(event.getMessage().getAuthor().getName() + " | Help").addField(ChatProcessor.PREFIX + cmd.getName(), cmd.getDesc(), false);
                 final StringBuilder sb = new StringBuilder();
                 for(final String s : cmd.getLongHelp()) {
                     sb.append(s.replace("%PREFIX%", ChatProcessor.PREFIX)).append('\n');
@@ -42,7 +42,7 @@ public class CommandHelp extends Command {
                 .forEach(e -> sb.append(String.format("**%s%s**: %s\n", ChatProcessor.PREFIX, e.getName(), e.getDesc())));
         sb.append("\n\nSupport server: https://discord.gg/wdp8zq4\n");
         sb.append("Bot invite: [Click](https://discordapp.com/oauth2/authorize?client_id=383113162670604289&scope=bot&permissions=347136)");
-        builder.addField("Help", sb.toString(), false);
+        builder.addField(event.getMessage().getAuthor().getName() + " | Help", sb.toString(), false);
         event.getChannel().sendMessage(builder.build()).queue();
         return true;
     }

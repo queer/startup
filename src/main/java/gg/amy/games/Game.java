@@ -31,6 +31,10 @@ public abstract class Game {
     
     public abstract void endGame(final MessageReceivedEvent event, final String title, final String field, final String msg);
     
+    protected final String getTitle(final MessageReceivedEvent event, final String s) {
+        return String.format("%s | %s", event.getAuthor().getName(), s);
+    }
+    
     protected final String getTitle(final MessageReceivedEvent event) {
         return String.format("%s | %s", event.getAuthor().getName(), name);
     }
