@@ -57,7 +57,7 @@ public class ChatProcessor implements EventListener {
                         pruned.incrementAndGet();
                         map.remove(user);
                     } else {
-                        pruned.incrementAndGet();
+                        active.incrementAndGet();
                     }
                 }));
                 if(pruned.get() > 0) {
@@ -65,10 +65,8 @@ public class ChatProcessor implements EventListener {
                 }
                 // Stuff other stats in here too :D
                 this.bot.getMetrics().getClient().gauge("active-games", active.get());
-                bot.getShards().forEach(shard -> {
-                    bot.getMetrics().getClient().gauge("guilds", shard.getJda().getGuildCache().size(),
-                            "shard:" + shard.getShardId());
-                });
+                bot.getShards().forEach(shard -> bot.getMetrics().getClient().gauge("guilds", shard.getJda().getGuildCache().size(),
+                        "shard:" + shard.getShardId()));
             }
         });
     }
