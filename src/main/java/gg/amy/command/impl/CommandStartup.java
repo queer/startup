@@ -39,15 +39,15 @@ public class CommandStartup extends Command {
             if(args.get(0).equalsIgnoreCase("end")) {
                 if(getBot().getState().getState(event.getGuild(), event.getAuthor()) != null) {
                     getBot().getState().deleteState(event.getGuild(), event.getAuthor());
-                    event.getChannel().sendMessage(new EmbedBuilder().addField("Simulation ended", "Thanks for playing!", false).build()).queue();
+                    event.getChannel().sendMessage(new EmbedBuilder().addField(event.getMessage().getAuthor().getName() + " | Simulation ended", "Thanks for playing!", false).build()).queue();
                 } else {
-                    event.getChannel().sendMessage(new EmbedBuilder().addField("Error", "You aren't playing a game!", false).build()).queue();
+                    event.getChannel().sendMessage(new EmbedBuilder().addField(event.getMessage().getAuthor().getName() + " | Error", "You aren't playing a game!", false).build()).queue();
                 }
                 return true;
             }
             if(args.get(0).equalsIgnoreCase("start")) {
                 if(getBot().getState().isActive(event.getGuild(), event.getAuthor())) {
-                    event.getChannel().sendMessage(new EmbedBuilder().addField("Error", "You're already playing a game!", false).build()).queue();
+                    event.getChannel().sendMessage(new EmbedBuilder().addField(event.getMessage().getAuthor().getName() + " | Error", "You're already playing a game!", false).build()).queue();
                     return true;
                 }
                 for(final StartupGame startupGame : StartupGame.values()) {
