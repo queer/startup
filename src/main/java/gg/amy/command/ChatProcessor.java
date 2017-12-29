@@ -63,7 +63,12 @@ public class ChatProcessor implements EventListener {
                 if(pruned.get() > 0) {
                     this.bot.getLogger().info("Pruned " + pruned.get() + " games.");
                 }
+                // Stuff other stats in here too :D
                 this.bot.getMetrics().getClient().gauge("active-games", active.get());
+                bot.getShards().forEach(shard -> {
+                    bot.getMetrics().getClient().gauge("guilds", shard.getJda().getGuildCache().size(),
+                            "shard:" + shard.getShardId());
+                });
             }
         });
     }
