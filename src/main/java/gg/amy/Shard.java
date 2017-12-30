@@ -65,7 +65,7 @@ public class Shard {
                 while(true) {
                     try {
                         Thread.sleep(5000L);
-                    } catch(InterruptedException e) {
+                    } catch(final InterruptedException e) {
                         e.printStackTrace();
                     }
                     try {
