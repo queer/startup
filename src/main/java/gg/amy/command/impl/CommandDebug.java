@@ -27,18 +27,14 @@ public class CommandDebug extends Command {
         int uniques = 0;
         int textChannels = 0;
         int voiceChannels = 0;
-        AtomicInteger games = new AtomicInteger(0);
-        getBot().getState().getStates().entrySet().forEach(entry -> {
-            final String snowflake = entry.getKey();
-            final Map<String, Game> value = entry.getValue();
-            value.forEach((user, game) -> {
-                if(getBot().getState().isActive(snowflake, user)) {
-                    games.incrementAndGet();
-                }
-            });
-        });
-        int upvotes = getBot().getWhoUpvoted().size();
-    
+        final AtomicInteger games = new AtomicInteger(0);
+        getBot().getState().getStates().forEach((snowflake, value) -> value.forEach((user, game) -> {
+            if(getBot().getState().isActive(snowflake, user)) {
+                games.incrementAndGet();
+            }
+        }));
+        final int upvotes = getBot().getWhoUpvoted().size();
+        
         for(final Shard shard : getBot().getShards()) {
             shards++;
             guilds += shard.getJda().getGuildCache().size();
@@ -47,7 +43,8 @@ public class CommandDebug extends Command {
             voiceChannels += shard.getJda().getVoiceChannelCache().size();
             textChannels += shard.getJda().getTextChannelCache().size();
         }
-        StringBuilder sb = new StringBuilder("```\n");
+        @SuppressWarnings("StringBufferReplaceableByString")
+        final StringBuilder sb = new StringBuilder("```\n");
         sb.append(" Shards: ").append(shards).append('\n');
         sb.append(" Guilds: ").append(guilds).append('\n');
         sb.append("  Users: ").append(users).append('\n');
