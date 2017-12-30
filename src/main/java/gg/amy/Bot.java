@@ -86,6 +86,7 @@ public final class Bot {
                     logger.info("Got snowflakes: " + snowflakes);
                     whoUpvoted.clear();
                     whoUpvoted.addAll(snowflakes);
+                    metrics.getClient().gauge("upvotes", whoUpvoted.size(), "site:dbl");
                 } catch(final UnirestException | IOException e) {
                     e.printStackTrace();
                 }
