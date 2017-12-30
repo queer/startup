@@ -5,8 +5,10 @@ import gg.amy.command.ChatProcessor;
 import gg.amy.command.Command;
 import gg.amy.games.Game;
 import gg.amy.games.StartupSimulator;
+import gg.amy.state.GamesState;
 import lombok.Getter;
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.lang.reflect.InvocationTargetException;
@@ -37,8 +39,8 @@ public class CommandStartup extends Command {
                     + " | Game info", sb.toString(), false).build()).queue();
         } else {
             if(args.get(0).equalsIgnoreCase("end")) {
-                if(getBot().getState().getState(event.getGuild(), event.getAuthor()) != null) {
-                    getBot().getState().deleteState(event.getGuild(), event.getAuthor());
+                if(getBot().getState().getState(GamesState.getSnowflake(event), event.getAuthor()) != null) {
+                    getBot().getState().deleteState(GamesState.getSnowflake(event), event.getAuthor());
                     event.getChannel().sendMessage(new EmbedBuilder().addField(event.getMessage().getAuthor().getName() + " | Simulation ended", "Thanks for playing!", false).build()).queue();
                 } else {
                     event.getChannel().sendMessage(new EmbedBuilder().addField(event.getMessage().getAuthor().getName() + " | Error", "You aren't playing a game!", false).build()).queue();
@@ -46,7 +48,7 @@ public class CommandStartup extends Command {
                 return true;
             }
             if(args.get(0).equalsIgnoreCase("start")) {
-                if(getBot().getState().isActive(event.getGuild(), event.getAuthor())) {
+                if(getBot().getState().isActive(GamesState.getSnowflake(event), event.getAuthor())) {
                     event.getChannel().sendMessage(new EmbedBuilder().addField(event.getMessage().getAuthor().getName() + " | Error", "You're already playing a game!", false).build()).queue();
                     return true;
                 }
@@ -55,7 +57,7 @@ public class CommandStartup extends Command {
                         final Class<? extends Game> c = startupGame.getGameClass();
                         try {
                             final Game game = c.getConstructor(Bot.class).newInstance(getBot());
-                            getBot().getState().updateState(event.getGuild(), event.getAuthor(), game);
+                            getBot().getState().updateState(GamesState.getSnowflake(event), event.getAuthor(), game);
                             game.initGame(event);
                         } catch(final InstantiationException | NoSuchMethodException | InvocationTargetException
                                 | IllegalAccessException e) {

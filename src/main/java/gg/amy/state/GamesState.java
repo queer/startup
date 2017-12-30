@@ -3,8 +3,8 @@ package gg.amy.state;
 import gg.amy.Bot;
 import gg.amy.games.Game;
 import lombok.Getter;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.ISnowflake;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author amy
  * @since 12/26/17.
  */
-@SuppressWarnings({"TypeMayBeWeakened", "unused"})
+@SuppressWarnings("unused")
 public class GamesState {
     @Getter
     private final Bot bot;
@@ -24,7 +24,7 @@ public class GamesState {
         this.bot = bot;
     }
     
-    public Game getState(final Guild guild, final User user) {
+    public Game getState(final ISnowflake guild, final ISnowflake user) {
         if(!states.containsKey(guild.getId())) {
             states.put(guild.getId(), new ConcurrentHashMap<>());
             return null;
@@ -32,14 +32,14 @@ public class GamesState {
         return states.get(guild.getId()).get(user.getId());
     }
     
-    public void updateState(final Guild guild, final User user, final Game game) {
+    public void updateState(final ISnowflake guild, final ISnowflake user, final Game game) {
         if(!states.containsKey(guild.getId())) {
             states.put(guild.getId(), new ConcurrentHashMap<>());
         }
         states.get(guild.getId()).put(user.getId(), game);
     }
     
-    public void deleteState(final Guild guild, final User user) {
+    public void deleteState(final ISnowflake guild, final ISnowflake user) {
         if(states.containsKey(guild.getId())) {
             if(states.get(guild.getId()).containsKey(user.getId())) {
                 states.get(guild.getId()).remove(user.getId());
@@ -47,10 +47,17 @@ public class GamesState {
         }
     }
     
-    public boolean isActive(final Guild guild, final User user) {
-        if(states.containsKey(guild.getId())) {
-            return states.get(guild.getId()).containsKey(user.getId());
+    public boolean isActive(final ISnowflake guild, final ISnowflake user) {
+        return states.containsKey(guild.getId()) && states.get(guild.getId()).containsKey(user.getId());
+    }
+    
+    public static ISnowflake getSnowflake(MessageReceivedEvent event) {
+        if(event.getGuild() != null) {
+            return event.getGuild();
         }
-        return false;
+        if(event.getPrivateChannel() != null) {
+            return event.getPrivateChannel();
+        }
+        return null;
     }
 }

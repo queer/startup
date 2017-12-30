@@ -6,6 +6,7 @@ import gg.amy.command.impl.CommandHelp;
 import gg.amy.command.impl.CommandRename;
 import gg.amy.command.impl.CommandStartup;
 import gg.amy.games.Game;
+import gg.amy.state.GamesState;
 import lombok.Getter;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
@@ -115,7 +116,7 @@ public class ChatProcessor implements EventListener {
                         }
                     });
                 } else {
-                    final Game state = bot.getState().getState(m.getGuild(), m.getAuthor());
+                    final Game state = bot.getState().getState(GamesState.getSnowflake(m), m.getAuthor());
                     if(state != null) {
                         state.handleNextMove(m);
                     }

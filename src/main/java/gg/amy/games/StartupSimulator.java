@@ -3,6 +3,7 @@ package gg.amy.games;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gg.amy.Bot;
+import gg.amy.state.GamesState;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Value;
@@ -88,7 +89,7 @@ public class StartupSimulator extends Game {
     private final Random random = new Random();
     private GameState state;
     private BonusType bonus = NONE;
-    private boolean sentBonus = false;
+    private boolean sentBonus;
     
     public StartupSimulator(final Bot bot) {
         super(bot, "Startup Simulator");
@@ -278,7 +279,7 @@ public class StartupSimulator extends Game {
             }
         }
         event.getChannel().sendMessage(builder.build()).queue();
-        getBot().getState().deleteState(event.getGuild(), event.getAuthor());
+        getBot().getState().deleteState(GamesState.getSnowflake(event), event.getAuthor());
     }
     
     @Override
@@ -296,7 +297,7 @@ public class StartupSimulator extends Game {
         // Apply state from previous card
         state.discarded.get(state.discarded.size() - 1).getChoices().setChosen(choice);
         updateState(state.card, choice.replace('1', 'a'));
-    
+        
         if(bonus == NONE && getBot().didUpvote(event) && !sentBonus) {
             if(random.nextInt(1000) <= 50) {
                 bonus = SUPERHERO;

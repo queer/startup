@@ -3,6 +3,7 @@ package gg.amy.games;
 import gg.amy.Bot;
 import lombok.Getter;
 import lombok.Setter;
+import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**
@@ -37,6 +38,16 @@ public abstract class Game {
     
     protected final String getTitle(final MessageReceivedEvent event) {
         return String.format("%s | %s", event.getAuthor().getName(), name);
+    }
+    
+    protected final ISnowflake getSnowflake(MessageReceivedEvent event) {
+        if(event.getGuild() != null) {
+            return event.getGuild();
+        }
+        if(event.getPrivateChannel() != null) {
+            return event.getPrivateChannel();
+        }
+        return null;
     }
     
     public enum EndReason {
