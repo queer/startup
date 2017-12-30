@@ -273,7 +273,8 @@ public class StartupSimulator extends Game {
         if(reason == EndReason.LOSE) {
             if(!getBot().didUpvote(event)) {
                 builder.addField("", "Tired of losing? [Upvote me](https://discordbots.org/bot/383113162670604289) " +
-                        "to get bonuses like extra money, more happiness, last-minute saves by investors, and more!", false);
+                        "to get bonuses like extra money, more happiness, last-minute saves by investors, and more!\n" +
+                        "\nUpvotes may take up to a minute to register.", false);
             } else {
                 builder.setColor(Color.GREEN);
             }
