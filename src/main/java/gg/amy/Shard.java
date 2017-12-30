@@ -64,6 +64,11 @@ public class Shard {
                 }
                 while(true) {
                     try {
+                        Thread.sleep(5000L);
+                    } catch(InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    try {
                         bot.getLogger().info("Posted stats to dbl: " +
                                 Unirest.post("https://discordbots.org/api/bots/" + jda.getSelfUser().getId() + "/stats")
                                         .header("Authorization", System.getenv("DBL_TOKEN"))
