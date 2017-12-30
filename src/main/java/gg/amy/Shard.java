@@ -58,7 +58,8 @@ public class Shard {
             
             // Start stats thread
             final Thread thread = new Thread(() -> {
-                if(System.getenv("BOT_DEBUG") != null) {
+                if(System.getenv("BOT_DEBUG") != null
+                        && !Boolean.parseBoolean(System.getenv("BOT_DEBUG"))) {
                     return;
                 }
                 while(true) {
