@@ -3,9 +3,12 @@ package gg.amy.command.impl;
 import gg.amy.Bot;
 import gg.amy.Shard;
 import gg.amy.command.Command;
+import gg.amy.games.Game;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author amy
@@ -24,6 +27,17 @@ public class CommandDebug extends Command {
         int uniques = 0;
         int textChannels = 0;
         int voiceChannels = 0;
+        AtomicInteger games = new AtomicInteger(0);
+        getBot().getState().getStates().entrySet().forEach(entry -> {
+            final String snowflake = entry.getKey();
+            final Map<String, Game> value = entry.getValue();
+            value.forEach((user, game) -> {
+                if(getBot().getState().isActive(snowflake, user)) {
+                    games.incrementAndGet();
+                }
+            });
+        });
+        int upvotes = getBot().getWhoUpvoted().size();
     
         for(final Shard shard : getBot().getShards()) {
             shards++;
@@ -40,6 +54,8 @@ public class CommandDebug extends Command {
         sb.append("Uniques: ").append(uniques).append('\n');
         sb.append("   Text: ").append(textChannels).append('\n');
         sb.append("  Voice: ").append(voiceChannels).append('\n');
+        sb.append("  Games: ").append(games.get()).append('\n');
+        sb.append("Upvotes: ").append(upvotes).append('\n');
         sb.append("```");
         
         event.getChannel().sendMessage(sb.toString()).queue();

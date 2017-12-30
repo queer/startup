@@ -24,31 +24,35 @@ public class GamesState {
         this.bot = bot;
     }
     
-    public Game getState(final ISnowflake guild, final ISnowflake user) {
-        if(!states.containsKey(guild.getId())) {
-            states.put(guild.getId(), new ConcurrentHashMap<>());
+    public Game getState(final ISnowflake snowflake, final ISnowflake user) {
+        if(!states.containsKey(snowflake.getId())) {
+            states.put(snowflake.getId(), new ConcurrentHashMap<>());
             return null;
         }
-        return states.get(guild.getId()).get(user.getId());
+        return states.get(snowflake.getId()).get(user.getId());
     }
     
-    public void updateState(final ISnowflake guild, final ISnowflake user, final Game game) {
-        if(!states.containsKey(guild.getId())) {
-            states.put(guild.getId(), new ConcurrentHashMap<>());
+    public void updateState(final ISnowflake snowflake, final ISnowflake user, final Game game) {
+        if(!states.containsKey(snowflake.getId())) {
+            states.put(snowflake.getId(), new ConcurrentHashMap<>());
         }
-        states.get(guild.getId()).put(user.getId(), game);
+        states.get(snowflake.getId()).put(user.getId(), game);
     }
     
-    public void deleteState(final ISnowflake guild, final ISnowflake user) {
-        if(states.containsKey(guild.getId())) {
-            if(states.get(guild.getId()).containsKey(user.getId())) {
-                states.get(guild.getId()).remove(user.getId());
+    public void deleteState(final ISnowflake snowflake, final ISnowflake user) {
+        if(states.containsKey(snowflake.getId())) {
+            if(states.get(snowflake.getId()).containsKey(user.getId())) {
+                states.get(snowflake.getId()).remove(user.getId());
             }
         }
     }
     
-    public boolean isActive(final ISnowflake guild, final ISnowflake user) {
-        return states.containsKey(guild.getId()) && states.get(guild.getId()).containsKey(user.getId());
+    public boolean isActive(final String snowflake, final String user) {
+        return states.containsKey(snowflake) && states.get(snowflake).containsKey(user);
+    }
+    
+    public boolean isActive(final ISnowflake snowflake, final ISnowflake user) {
+        return isActive(snowflake.getId(), user.getId());
     }
     
     public static ISnowflake getSnowflake(MessageReceivedEvent event) {
