@@ -29,7 +29,7 @@ public abstract class Game {
     
     public abstract void handleNextMove(MessageReceivedEvent event);
     
-    public abstract void endGame(final MessageReceivedEvent event, final String title, final String field, final String msg);
+    public abstract void endGame(final MessageReceivedEvent event, final String title, final String field, final String msg, EndReason reason);
     
     protected final String getTitle(final MessageReceivedEvent event, final String s) {
         return String.format("%s | %s", event.getAuthor().getName(), s);
@@ -37,5 +37,11 @@ public abstract class Game {
     
     protected final String getTitle(final MessageReceivedEvent event) {
         return String.format("%s | %s", event.getAuthor().getName(), name);
+    }
+    
+    public enum EndReason {
+        WIN,
+        LOSE,
+        CANCEL
     }
 }

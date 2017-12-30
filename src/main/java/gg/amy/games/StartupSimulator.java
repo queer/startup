@@ -9,14 +9,18 @@ import lombok.Value;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static gg.amy.games.StartupSimulator.BonusType.*;
 
 /**
  * @author amy
@@ -83,6 +87,8 @@ public class StartupSimulator extends Game {
     
     private final Random random = new Random();
     private GameState state;
+    private BonusType bonus = NONE;
+    private boolean sentBonus = false;
     
     public StartupSimulator(final Bot bot) {
         super(bot, "Startup Simulator");
@@ -96,6 +102,15 @@ public class StartupSimulator extends Game {
     
     private void sendCard(final MessageReceivedEvent event, final Card card) {
         state.card = card;
+        if(bonus == NONE && getBot().didUpvote(event) && card.getId() == 196) {
+            if(random.nextInt(1000) < 50) {
+                state.happiness *= 2;
+                bonus = START_HAPPY;
+            } else if(random.nextInt(1000) < 50) {
+                state.valuation += 100;
+                bonus = START_MONEY;
+            }
+        }
         final String[] characterNames = card.getCharacter().split(",");
         final StringBuilder names = new StringBuilder();
         for(String name : characterNames) {
@@ -105,6 +120,9 @@ public class StartupSimulator extends Game {
             }
         }
         final EmbedBuilder builder = new EmbedBuilder();
+        if(getBot().didUpvote(event)) {
+            builder.setColor(Color.GREEN);
+        }
         
         final StringBuilder choices = new StringBuilder();
         choices.append("**1**. ").append(card.getChoices().getA().getLabel());
@@ -117,6 +135,23 @@ public class StartupSimulator extends Game {
                 .addField("Stats", String.format("Valuation: %s\nHappiness: %s\nMonth: %s %s", formatValuation(),
                         formatHappiness(), getMonth(), monthProgressBar()), false);
         event.getChannel().sendMessage(builder.build()).queue();
+        String bonusMsg = null;
+        switch(bonus) {
+            case START_HAPPY:
+                bonusMsg = "Your employees love you and your company!";
+                break;
+            case START_MONEY:
+                bonusMsg = "A mysterious sponsor gave you an initial investment! Wow!";
+                break;
+        }
+        if(bonus != NONE && !sentBonus && bonusMsg != null) {
+            sentBonus = true;
+            event.getChannel().sendMessage(new EmbedBuilder()
+                    .setColor(Color.GREEN)
+                    .setTitle(getTitle(event))
+                    .addField("Bonus", bonusMsg, false)
+                    .build()).queue();
+        }
     }
     
     private String formatHappiness() {
@@ -164,8 +199,8 @@ public class StartupSimulator extends Game {
     private String monthProgressBar() {
         final int day = 84 - state.time;
         final int nextMonth = ((84 - state.time) / 7 + 1) * 7;
-        int daysLeft = nextMonth - day;
-        int daysUsed = 7 - daysLeft;
+        final int daysLeft = nextMonth - day;
+        final int daysUsed = 7 - daysLeft;
         final StringBuilder s = new StringBuilder("`[");
         for(int i = 0; i < daysUsed; i++) {
             s.append('█');
@@ -215,6 +250,9 @@ public class StartupSimulator extends Game {
     @Override
     public void initGame(final MessageReceivedEvent event) {
         final EmbedBuilder init = new EmbedBuilder();
+        if(getBot().didUpvote(event)) {
+            init.setColor(Color.GREEN);
+        }
         init.setTitle(String.format("%s | Startup Simulator", event.getAuthor().getName()))
                 .addField("Tutorial",
                         "Your goal is to have a valuation of at least $1 billion by the end of the year\n" +
@@ -228,8 +266,17 @@ public class StartupSimulator extends Game {
     }
     
     @Override
-    public void endGame(final MessageReceivedEvent event, final String title, final String field, final String msg) {
+    public void endGame(final MessageReceivedEvent event, final String title, final String field, final String msg,
+                        final EndReason reason) {
         final EmbedBuilder builder = new EmbedBuilder().setTitle(title).addField(field, msg, false);
+        if(reason == EndReason.LOSE) {
+            if(!getBot().didUpvote(event)) {
+                builder.addField("", "Tired of losing? [Upvote me](https://discordbots.org/bot/383113162670604289) " +
+                        "to get bonuses like extra money, more happiness, last-minute saves by investors, and more!", false);
+            } else {
+                builder.setColor(Color.GREEN);
+            }
+        }
         event.getChannel().sendMessage(builder.build()).queue();
         getBot().getState().deleteState(event.getGuild(), event.getAuthor());
     }
@@ -243,31 +290,58 @@ public class StartupSimulator extends Game {
         }
         setLastInteraction(System.currentTimeMillis());
         if(state.deck.isEmpty()) {
-            endGame(event, getTitle(event), "Game over!", "Completely ran out of options to give you!");
+            endGame(event, getTitle(event), "Game over!", "Completely ran out of options to give you!", EndReason.CANCEL);
             return;
         }
         // Apply state from previous card
         state.discarded.get(state.discarded.size() - 1).getChoices().setChosen(choice);
         updateState(state.card, choice.replace('1', 'a'));
+    
+        if(bonus == NONE && getBot().didUpvote(event) && !sentBonus) {
+            if(random.nextInt(1000) <= 50) {
+                bonus = SUPERHERO;
+                state.valuation += 100;
+                state.happiness += 10;
+                final EmbedBuilder builder = new EmbedBuilder().setColor(Color.GREEN);
+                builder.setTitle(getTitle(event))
+                        .addField("Bonus", "A passing superhero saved you from a monster, raising your valuation and boosting morale! Wow!", false);
+                event.getChannel().sendMessage(builder.build()).queue();
+                handleNextMove(event);
+                return;
+            }
+        }
         
         // Check victory / loss
         if(state.valuation <= 0) {
-            endGame(event, getTitle(event, "You lost!"), "Worthless", "Everyone abandons your worthless startup and you become an alcoholic.");
+            if(bonus == NONE && getBot().didUpvote(event)) {
+                if(random.nextInt(1000) <= 250 && !sentBonus) {
+                    bonus = LOSS_MONEY;
+                    state.valuation += 100;
+                    final EmbedBuilder builder = new EmbedBuilder().setColor(Color.GREEN);
+                    builder.setTitle(getTitle(event))
+                            .addField("Bonus", "A last-minute investment saved you from failure! Wow!", false);
+                    event.getChannel().sendMessage(builder.build()).queue();
+                    handleNextMove(event);
+                    return;
+                }
+            }
+            endGame(event, getTitle(event, "You lost!"), "Worthless",
+                    "Everyone abandons your worthless startup and you become an alcoholic.", EndReason.LOSE);
             return;
         }
         if(state.time <= 0) {
             if(state.valuation >= 1000) {
                 endGame(event, getTitle(event, "You won!"), String.format("Your startup is worth %.3f BILLION dollars!", state.valuation / 1000D),
-                        "You still don't have revenue, but who cares - UNICORN, BABY!");
+                        "You still don't have revenue, but who cares - UNICORN, BABY!", EndReason.WIN);
                 return;
             } else if(state.valuation >= 800) {
                 endGame(event, getTitle(event, "You lost!"), "Out of time",
                         "You raise a lot of money, but being valued at less than a billion is not sexy, " +
-                                "and the tech world soon forgets about your startup.");
+                                "and the tech world soon forgets about your startup.", EndReason.LOSE);
                 return;
             } else {
                 endGame(event, getTitle(event, "You lost!"), "Out of time",
-                        "You raised a bit of money, but you're just not cool enough to be a unicorn.");
+                        "You raised a bit of money, but you're just not cool enough to be a unicorn.", EndReason.LOSE);
                 return;
             }
         }
@@ -276,7 +350,7 @@ public class StartupSimulator extends Game {
                     "Your employees revolt, your startup collapses and you go back to driving for Uber.",
                     "Your employees have left, and with no one by your side, you go back to your mom's basement."
             };
-            endGame(event, "You lost!", "Your startup is dead", opts[random.nextInt(opts.length)]);
+            endGame(event, "You lost!", "Your startup is dead", opts[random.nextInt(opts.length)], EndReason.LOSE);
             return;
         }
         
@@ -298,7 +372,7 @@ public class StartupSimulator extends Game {
                     return;
                 }
             }
-            endGame(event, getTitle(event), "Game over!", "Completely ran out of options to give you!");
+            endGame(event, getTitle(event), "Game over!", "Completely ran out of options to give you!", EndReason.CANCEL);
         }
     }
     
@@ -420,6 +494,14 @@ public class StartupSimulator extends Game {
         state.time = 84;
         state.happiness = 50;
         return state;
+    }
+    
+    public enum BonusType {
+        START_HAPPY,
+        START_MONEY,
+        LOSS_MONEY,
+        SUPERHERO,
+        NONE,
     }
     
     @Value

@@ -1,5 +1,6 @@
 package gg.amy;
 
+import com.mashape.unirest.http.Unirest;
 import gg.amy.command.ChatProcessor;
 import lombok.Getter;
 import net.dv8tion.jda.core.AccountType;
@@ -10,8 +11,10 @@ import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.EventListener;
+import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author amy
@@ -52,6 +55,33 @@ public class Shard {
                     .addEventListener(bot.getChatProcessor())
                     .setStatus(OnlineStatus.DO_NOT_DISTURB)
                     .buildBlocking(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
+            
+            // Start stats thread
+            final Thread thread = new Thread(() -> {
+                if(System.getenv("BOT_DEBUG") != null) {
+                    return;
+                }
+                while(true) {
+                    try {
+                        bot.getLogger().info("Posted stats to dbl: " +
+                                Unirest.post("https://discordbots.org/api/bots/" + jda.getSelfUser().getId() + "/stats")
+                                        .header("Authorization", System.getenv("DBL_TOKEN"))
+                                        .header("Content-Type", "application/json")
+                                        .body(new JSONObject().put("server_count", jda.getGuilds().size()).put("shard_id", shardId)
+                                                .put("shard_count", shardLimit).toString())
+                                        .asString().getBody());
+                    } catch(final Throwable e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        Thread.sleep(TimeUnit.HOURS.toMillis(1));
+                    } catch(InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            thread.setName("DBL memes thread");
+            thread.start();
         } catch(final LoginException | InterruptedException | RateLimitedException e) {
             e.printStackTrace();
         }
