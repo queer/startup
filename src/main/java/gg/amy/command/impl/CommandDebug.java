@@ -4,6 +4,8 @@ import gg.amy.Bot;
 import gg.amy.Shard;
 import gg.amy.command.Command;
 import gg.amy.games.Game;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.List;
@@ -56,6 +58,25 @@ public class CommandDebug extends Command {
         sb.append("```");
         
         event.getChannel().sendMessage(sb.toString()).queue();
+        final StringBuilder sc = new StringBuilder("```\n");
+        sc.append("Upvoters:").append('\n');
+        getBot().getWhoUpvoted().forEach(e -> {
+            boolean found = false;
+            for(final Shard shard : getBot().getShards()) {
+                final JDA jda = shard.getJda();
+                final User user = jda.getUserById(e);
+                if(user != null) {
+                    found = true;
+                    sc.append(user.getName()).append('#').append(user.getDiscriminator()).append(" | ").append(e).append('\n');
+                    break;
+                }
+            }
+            if(!found) {
+                sc.append("Unknown user | ").append(e).append('\n');
+            }
+        });
+        sc.append("```");
+        event.getChannel().sendMessage(sc.toString()).queue();
         return false;
     }
     
